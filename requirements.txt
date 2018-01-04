@@ -5,3 +5,7 @@ itsdangerous==0.24
 Jinja2==2.10
 MarkupSafe==1.0
 Werkzeug==0.12.2
+flask-sqlalchemy==2.3.2
+geocoder==1.33.0
+flask-wtf==0.14.2
+psycopg2==2.7.3.2
