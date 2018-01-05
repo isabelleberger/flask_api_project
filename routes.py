@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, session, redirect, url_for
-from models import db, User, Place 
+from models import db, User, Place, Bus 
 from forms import SignupForm, LoginForm, AddressForm
 
 app = Flask(__name__)
@@ -77,6 +77,7 @@ def home():
 		return redirect(url_for('login'))
 
 	form = AddressForm()
+	buses = []
 	places = []
 	my_coordinates = (37.4221, -122.0844)
 
