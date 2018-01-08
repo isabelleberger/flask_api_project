@@ -3,6 +3,7 @@ from werkzeug import generate_password_hash, check_password_hash
 import geocoder
 import urllib
 import json
+import geopy.distance
 
 db = SQLAlchemy()
 
@@ -29,7 +30,19 @@ class User(db.Model):
 # b = Bus()
 # buses = b.query("500 H Street NE Washington DC")
 class Bus(object):
+	def address_to_latlng(self, address):
+		g = geocoder.google(address)
+		return (g.lat, g.lng)
+        def latlng_to_dist(self, lat1, lng1, lat2, lng2):
+                dist = geopy.distance.vincenty((lat1,lng1),(lat2,lng2)).miles
+                return dist
+        def smallest(self, distances):
+                y = [float(x) for x in distances]
+                return min(y)
 	def query(self, address):
+		lat1, lng1 = self.address_to_latlng(address)
+		print(lat1, lng1)
+
 		query_url = "https://maps2.dcgis.dc.gov/dcgis/rest/services/DCGIS_DATA/Transportation_WebMercator/MapServer/53/query?where=1%3D1&outFields=LATITUDE,LONGITUDE,BSTP_MSG_TEXT,BSTP_IFC_OWN&outSR=4326&f=json"
 		g = urllib.request.urlopen(query_url)
 		results = g.read()
@@ -40,19 +53,22 @@ class Bus(object):
 		buses=[]
 		for bus in data['features']:
 		    stop_name = bus['attributes']['BSTP_MSG_TEXT']
-		    lat = bus['attributes']['LATITUDE']
-		    lng = bus['attributes']['LONGITUDE']
-		    own = bus['attributes']['BSTP_IFC_OWN']
-		    
-		    
-		    d = {
-			'name': stop_name,
-			'own': own,
-			'lat': lat,
-			'lng': lng
-		    }
-		    buses.append(d)
-		return buses
+		    lat2 = bus['attributes']['LATITUDE']
+		    lng2 = bus['attributes']['LONGITUDE']
+		    dist = latlng_to_dist(lat1, lng1, lat2, lng2)
+                    own = bus['attributes']['BSTP_IFC_OWN']
+                    #only query buses less than a mile from search location
+                    if dist < 1:    
+		        d = {
+			    'name': stop_name,
+			    'own': own,
+			    'lat': lat,
+			    'lng': lng
+                            'dist': dist
+		        }
+		        buses.append(d)
+                closest_bus = smallest(buses['dist'])
+		return buses, closest_bus
 
 # p = Place()
 # places = p.query("1600 Ampitheater Parkway Mountain View CA")
