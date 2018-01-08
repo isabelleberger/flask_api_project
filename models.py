@@ -33,9 +33,9 @@ class Bus(object):
 	def address_to_latlng(self, address):
 		g = geocoder.google(address)
 		return (g.lat, g.lng)
-        def latlng_to_dist(self, lat1, lng1, lat2, lng2):
-                dist = geopy.distance.vincenty((lat1,lng1),(lat2,lng2)).miles
-                return dist
+	def latlng_to_dist(self, lat1, lng1, lat2, lng2):
+		dist = geopy.distance.vincenty((lat1,lng1),(lat2,lng2)).miles
+		return dist
 	def query(self, address):
 		lat1, lng1 = self.address_to_latlng(address)
 		print(lat1, lng1)
@@ -53,18 +53,18 @@ class Bus(object):
 		    lat2 = bus['attributes']['LATITUDE']
 		    lng2 = bus['attributes']['LONGITUDE']
 		    dist = self.latlng_to_dist(lat1, lng1, lat2, lng2)
-                    own = bus['attributes']['BSTP_IFC_OWN']
-                    #only query buses less than a mile from search location
-                    if dist < 1:    
+		    own = bus['attributes']['BSTP_IFC_OWN']
+        #only query buses less than a mile from search location
+		    if dist < 1:
 		        d = {
 			    'name': stop_name,
 			    'own': own,
 			    'lat': lat2,
 			    'lng': lng2,
-                            'dist': dist
+			    'dist': dist
 		        }
 		        buses.append(d)
-                closest = min(buses, key=lambda x:x['dist'])
+		        closest = min(buses, key=lambda x:x['dist'])
 		return buses, closest
 
 # p = Place()

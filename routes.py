@@ -78,8 +78,7 @@ def home():
 
 	form = AddressForm()
 	buses = []
-	places = []
-	my_coordinates = (37.4221, -122.0844)
+	my_coordinates = (38.905276, -76.981588)
 
 	if request.method == 'POST':
 		if form.validate() == False:
@@ -89,14 +88,19 @@ def home():
 			address = form.address.data
 			#query for buses around it
 			b = Bus()
-			p = Place()
-			my_coordinates = p.address_to_latlng(address)
-			buses = b.query(address)
+			my_coordinates = b.address_to_latlng(address)
+                        
+			buses, closest = b.query(address)
 			#return those results
-			return render_template('home.html', form=form, my_coordinates=my_coordinates, buses=buses)
+			return render_template('home.html', form=form, my_coordinates=my_coordinates, buses=buses, closest=closest)
 
 	elif request.method == 'GET':
-		return render_template('home.html', form=form, my_coordinates=my_coordinates, buses=buses)
+		bad = {
+			'name':'______',
+			'own':'______',
+			'dist':'______'
+		}
+		return render_template('home.html', form=form, my_coordinates=my_coordinates, buses=buses, closest=bad)
 
 if __name__ == "__main__":
   app.run(debug=True)

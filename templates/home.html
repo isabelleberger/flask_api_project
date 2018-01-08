@@ -5,14 +5,8 @@
 		<div class="container">
 
 			<div class="section-tabs">
-				<div class="buses">
-					{% for bus in buses %}
-						
-						<article>
-							<p class="description">{{ bus['name'] }}, run by {{bus['own']}}</p>
-						</article>
-					{% endfor %}
-				</div>
+				<h2>Map nearby buses.</h2>
+				<p>The closest bus is {{ closest['name'] }}, run by {{closest['own']}}. The bus is {{ closest['dist'] }} miles away.</p>
 			</div>	
 			
 			<div class="section-map">
