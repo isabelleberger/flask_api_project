@@ -36,9 +36,6 @@ class Bus(object):
         def latlng_to_dist(self, lat1, lng1, lat2, lng2):
                 dist = geopy.distance.vincenty((lat1,lng1),(lat2,lng2)).miles
                 return dist
-        def smallest(self, distances):
-                y = [float(x) for x in distances]
-                return min(y)
 	def query(self, address):
 		lat1, lng1 = self.address_to_latlng(address)
 		print(lat1, lng1)
@@ -55,20 +52,20 @@ class Bus(object):
 		    stop_name = bus['attributes']['BSTP_MSG_TEXT']
 		    lat2 = bus['attributes']['LATITUDE']
 		    lng2 = bus['attributes']['LONGITUDE']
-		    dist = latlng_to_dist(lat1, lng1, lat2, lng2)
+		    dist = self.latlng_to_dist(lat1, lng1, lat2, lng2)
                     own = bus['attributes']['BSTP_IFC_OWN']
                     #only query buses less than a mile from search location
                     if dist < 1:    
 		        d = {
 			    'name': stop_name,
 			    'own': own,
-			    'lat': lat,
-			    'lng': lng
+			    'lat': lat2,
+			    'lng': lng2,
                             'dist': dist
 		        }
 		        buses.append(d)
-                closest_bus = smallest(buses['dist'])
-		return buses, closest_bus
+                closest = min(buses, key=lambda x:x['dist'])
+		return buses, closest
 
 # p = Place()
 # places = p.query("1600 Ampitheater Parkway Mountain View CA")
